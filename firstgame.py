@@ -5,7 +5,7 @@ pygame.init()
 
 display_width = 640
 display_height = 480
-number = 25
+number = 20
 
 mysteryColor = (30, 25, 111)
 mysteryColorAgain = (21, 120, 255)

@@ -6,7 +6,7 @@ pygame.init()
 display_width = 640
 display_height = 480
 number = 20
-
+#just testing
 mysteryColor = (30, 25, 111)
 mysteryColorAgain = (21, 120, 255)
 mysteryColorMeUp = (130, 52, 201)

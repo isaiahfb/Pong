@@ -1,3 +1,4 @@
+
 import pygame
 import sys
 
@@ -5,12 +6,8 @@ pygame.init()
 
 display_width = 640
 display_height = 480
-number = 25
 
-mysteryColor = (30, 25, 111)
-mysteryColorAgain = (21, 120, 255)
-mysteryColorMeUp = (130, 52, 201)
-red = pygame.Color('red')
+#print(pygame.font.get_fonts());
 
 pygame.display.set_caption('Pong')
 
@@ -18,54 +15,65 @@ clock = pygame.time.Clock()
 
 screen = pygame.display.set_mode((display_width,display_height))
 
-starX = 100
-starY = 100
-star = pygame.image.load('star.png')
-print(star.get_rect().size)
-star = pygame.transform.scale(star, (100,100))
-
 x = (display_width*0.45)
 y = (display_height*0.8)
 
+print("NOTES:");
+print();
+print("PLAYER ONE: (Left) ");
+print("Press 'w' to move up, 's' to move down");
+print("PLAYER TWO: (Right) ");
+print("Press 'Up' to move up, 'Down' to move down");
+print();
+print("Press 'esc' to exit!"); 
+
 gameOver = False
+
+yPos1 = 0
+yPos2 = 0
+yPos1_change = 0;
+yPos2_change = 0; 
 
 while not gameOver:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             gameOver = True
- 
-    print(event)
-    
-    screen.fill(mysteryColor)
-    
-    pygame.draw.circle(screen, pygame.Color('chartreuse3'), (320,250), 20, 0)
-    pygame.draw.rect(screen, mysteryColorMeUp, (0,0,15,70), 0)
-    pygame.draw.rect(screen, mysteryColorMeUp, (625,0,15,70), 0)
+            
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                yPos2_change = -10     
+            if event.key == pygame.K_DOWN:
+                yPos2_change = 10
+            if event.key == pygame.K_w:
+                yPos1_change = -10
+            if event.key == pygame.K_s:
+                yPos1_change = 10
+            if event.key == pygame.K_ESCAPE:
+                gameOver = True
+                print(); 
+                print(":^) Bye! :^)"); 
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                yPos2_change = 0
+            if event.key == pygame.K_w or event.key == pygame.K_s:
+                yPos1_change = 0
+                
+    yPos1 += yPos1_change
+    yPos2 += yPos2_change
+  
+    screen.fill(pygame.Color('papayawhip'))
 
-    keys = pygame.key.get_pressed() 
-    if keys[pygame.K_UP]:
-        pygame.draw.circle(screen, pygame.Color('black'), (500,300), number, 0)
-        number+=1
-    if keys[pygame.K_DOWN]:
-        print("DOWN");
-    if keys[pygame.K_a]:
-        starX-=2
-        
-    if keys[pygame.K_d]:
-        starX+=2
-    if keys[pygame.K_w]:
-        starY-=2
-    if keys[pygame.K_s]:
-        starY+=2
-    
-    
-    basicfont = pygame.font.SysFont(None, 48)
-    text = basicfont.render('Hiiiiiiiii', True, (255, 0, 0), (255, 255, 255))
-    textrect = text.get_rect()
-    screen.blit(text, [300,50])
+    pygame.draw.circle(screen, pygame.Color('salmon'), (320,250), 20, 0)  
+    block1 = pygame.draw.rect(screen, pygame.Color('royalblue1'), (0,yPos1,15,70), 0)
+    block2 = pygame.draw.rect(screen, pygame.Color('royalblue1'), (625,yPos2,15,70), 0)   
 
-    screen.blit(star, (starX,starY))
+    myfont = pygame.font.SysFont("batangbatangchegungsuhgungsuhche", 20)
+    text = myfont.render("HI SAIAH!", 1, (154, 12, 63))
+    screen.blit(text, (180, 180))
+    
+    
+    pygame.display.flip()
     pygame.display.update()
 
     clock.tick(60)

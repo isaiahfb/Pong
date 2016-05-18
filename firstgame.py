@@ -31,7 +31,7 @@ print();
 winScore = input("How many points do you want to play to? ")
 
 gameOver = False
-winnner = False
+winner = False
 
 
 blockWidth = 15
@@ -43,13 +43,13 @@ class StartButton:
     def __init__(self,x,y):
         self.x = x
         self.y = y
-        self.width = 124
+        self.width = 146
         self.height = 50
         self.rect = pygame.Rect(x,y,self.width,self.height)
     def render(self):
         pygame.draw.rect(screen,pygame.Color('red'),(self.x,self.y,self.width,self.height))
 
-button = StartButton(displayWidth/2-62, displayHeight*0.4)
+button = StartButton(displayWidth/2-73, displayHeight*0.4)
 play = False
 
 
@@ -60,7 +60,7 @@ while not play:
     button.render()
     myfont = pygame.font.SysFont("batangbatangchegungsuhgungsuhche", 80)
     text = myfont.render("PLAY", 1, (0, 0, 0))
-    screen.blit(text, (displayWidth/2-62,displayHeight*0.4))
+    screen.blit(text, (displayWidth/2-73,displayHeight*0.4))
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

@@ -16,8 +16,6 @@ clock = pygame.time.Clock()
 
 screen = pygame.display.set_mode((displayWidth,displayHeight))
 
-#x = (displayWidth*0.45)
-#y = (displayHeight*0.8)
 
 print("NOTES:");
 print();
@@ -45,8 +43,6 @@ yPos1_change = 0
 yPos2_change = 0
 counterx = 0
 countery = 0
-counter_changex = 0
-counter_changey = 0
 speed = 7
 score1 = 0
 score2 = 0
@@ -95,19 +91,14 @@ def restart():
     angle1 = random.randint(134, 225)
     angle2 = random.randint(-46,45)
     angleChoose = random.randint(0,1)
+    global angle, counter_changex, counter_changey
     if angleChoose == 0:
-        global angle
         angle = angle1
-        global counter_changex
         counter_changex = (math.cos(angle*math.pi/180)*speed)
-        global counter_changey
         counter_changey = (math.sin(angle*math.pi/180)*speed)
-    if angleChoose == 1:
-        global angle
+    elif angleChoose == 1:
         angle = angle2
-        global counter_changex
         counter_changex = (math.cos(angle*math.pi/180)*speed)
-        global counter_changey
         counter_changey = (math.sin(angle*math.pi/180)*speed) 
 
 while not play:
@@ -123,6 +114,8 @@ while not play:
         if event.type == pygame.QUIT:
             play = True
             gameOver = True
+            print(); 
+            print(":^) Bye! :^)");
         if event.type == pygame.KEYDOWN:       
             if event.key == pygame.K_ESCAPE:
                 play = True
@@ -135,15 +128,6 @@ while not play:
                 play = True
                 restart()
                 
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_DOWN] and yPos2+blockLength <= displayHeight:
-        yPos2+=10
-    if keys[pygame.K_UP] and yPos2 >= 0:
-        yPos2-=10
-    if keys[pygame.K_s] and yPos1+blockLength <= displayHeight:
-        yPos1+=10
-    if keys[pygame.K_w] and yPos1 >= 0:
-        yPos1-=10
                 
 while not gameOver:
 
@@ -169,7 +153,14 @@ while not gameOver:
                 yPos2_change = 0
             if event.key == pygame.K_w or event.key == pygame.K_s:
                 yPos1_change = 0
-                
+    if yPos1 < 0 and yPos1_change < 0:
+        yPos1_change = 0
+    if yPos2 < 0 and yPos2_change < 0:
+        yPos2_change = 0
+    if yPos1 > displayHeight - blockLength and yPos1_change > 0:
+        yPos1_change = 0
+    if yPos2 > displayHeight - blockLength and yPos2_change > 0:
+        yPos2_change = 0                     
     yPos1 += yPos1_change
     yPos2 += yPos2_change
     counterx += counter_changex
@@ -182,8 +173,8 @@ while not gameOver:
     image = pygame.transform.scale(beachBall, (40,40))
  
     myfont = pygame.font.SysFont("batangbatangchegungsuhgungsuhche", 20)
-    text = myfont.render("HI SAIAH!", 1, (154, 12, 63))
-    screen.blit(text, (180, 180))
+  #  text = myfont.render("HI SAIAH!", 1, (154, 12, 63))
+ #   screen.blit(text, (180, 180))
 
     block1 = Block(blockColor1, 0, yPos1, blockWidth, blockLength)
     block1.render()
@@ -218,6 +209,7 @@ while not gameOver:
         score2 += 1
         if score2 >= winScore:
             winner = True
+            gameOver = True
         restart()        
     elif ball.x+40 >= 640:
         print("Player 1 gets a point");
@@ -226,6 +218,7 @@ while not gameOver:
         score1+=1
         if score1 >= winScore:
             winner = True
+            gameOver = True
         restart()
         
     if pygame.sprite.collide_rect(block1, ball):

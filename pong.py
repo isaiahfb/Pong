@@ -19,18 +19,16 @@ screen = pygame.display.set_mode((displayWidth,displayHeight))
 
 # console menu
 
-print("NOTES:");
-print();
-print("PLAYER ONE: (Left) ");
-print("Press 'w' to move up, 's' to move down");
-print("PLAYER TWO: (Right) ");
-print("Press 'Up' to move up, 'Down' to move down");
-print();
-print("Press 'esc' to exit!");
-print();
-print();
+print()
+print("PLAYER ONE: (Left) ")
+print("Press 'w' to move up, 's' to move down")
+print("PLAYER TWO: (Right) ")
+print("Press 'Up' to move up, 'Down' to move down")
+print()
+print("Press 'esc' to exit")
+print()
 
-winScore = int(input("How many points do you want to play to? "))
+
 
 # start of game setup
 
@@ -42,8 +40,8 @@ blockWidth = 15
 blockLength = 70
 blockColor1 = pygame.Color('royalblue1')
 blockColor2 = pygame.Color('mediumspringgreen')
-yPos1 = (displayHeight/2)-(blockLength/2)
-yPos2 = (displayHeight/2)-(blockLength/2)
+yPos1 = int((displayHeight/2)-(blockLength/2))
+yPos2 = int((displayHeight/2)-(blockLength/2))
 yPos1_change = 0
 yPos2_change = 0
 counterx = 0
@@ -99,28 +97,42 @@ def restart():
     global angle, counter_changex, counter_changey
     if angleChoose == 0:
         angle = angle1
-        counter_changex = (math.cos(angle*math.pi/180)*speed)
-        counter_changey = (math.sin(angle*math.pi/180)*speed)
+        counter_changex = int((math.cos(angle*math.pi/180)*speed))
+        counter_changey = int((math.sin(angle*math.pi/180)*speed))
     elif angleChoose == 1:
         angle = angle2
-        counter_changex = (math.cos(angle*math.pi/180)*speed)
-        counter_changey = (math.sin(angle*math.pi/180)*speed) 
+        counter_changex = int((math.cos(angle*math.pi/180)*speed))
+        counter_changey = int((math.sin(angle*math.pi/180)*speed))
 
 
 # start screen
 
-button = StartButton(displayWidth/2-110, displayHeight*0.4)
+button = StartButton(int(displayWidth/2-125), int(displayHeight/2-40))
+inputboxcolor = (235, 235, 235)
+active = False
+inputtext = ""
 
 while not play:
     clock.tick(60)
     pygame.display.flip()
     screen.fill(pygame.Color('paleturquoise2'))
+
+    # play button and score input
+
     button.render()
     if button.rect.collidepoint(pygame.mouse.get_pos()):
         button.render2()
-    myfont = pygame.font.SysFont("batangbatangchegungsuhgungsuhche", 130)
-    text = myfont.render("PLAY", 1, (255, 255, 255))
-    screen.blit(text, (displayWidth/2-100,displayHeight*0.4))
+    playfont = pygame.font.SysFont("batangbatangchegungsuhgungsuhche", 130)
+    playtext = playfont.render("PLAY", True, (255, 255, 255))
+    screen.blit(playtext, (int(displayWidth/2-118),int(displayHeight/2-40)))
+
+    pointsfont = pygame.font.SysFont("batangbatangchegungsuhgungsuhche", 26)
+    pointstext = pointsfont.render("Enter the winning score: ", True, (0, 0 ,0))
+    screen.blit(pointstext, (int(displayWidth/2-125),int(displayHeight/2 + 60)))
+
+    inputbox = pygame.Rect(int(displayWidth/2+85), int(displayHeight/2 + 56), 40, 20)
+    coloractive = (255,255,255)
+    colorinactive = (235, 235, 235)
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -130,12 +142,41 @@ while not play:
             if event.key == pygame.K_ESCAPE:
                 play = True
                 gameOver = True
+        # click play 
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             if button.rect.collidepoint(pos):               
                 play = True
                 restart()
-                
+        # change color of input box
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if inputbox.collidepoint(event.pos):
+                inputboxcolor = coloractive
+                active = True
+            else:
+                inputboxcolor = colorinactive
+                active = False
+        # read input text
+        if event.type == pygame.KEYDOWN:
+            if active:
+                if event.key == pygame.K_RETURN:
+                    active = False
+                    inputboxcolor = colorinactive
+                elif event.key == pygame.K_BACKSPACE:
+                    inputtext = inputtext[:-1]
+                else:
+                    inputtext += event.unicode
+        
+    pygame.draw.rect(screen, inputboxcolor, inputbox)
+    if inputtext or active: 
+        textsurface = pointsfont.render(inputtext, True, (0, 0 ,0))
+        screen.blit(textsurface, (int(displayWidth/2+85), int(displayHeight/2 + 58)))
+
+try: 
+    winScore = int(inputtext)
+except ValueError:
+    winScore = 10
+         
 # main game loop
 
 while not gameOver:
@@ -204,8 +245,8 @@ while not gameOver:
     
     if ball.y <= 0 or ball.y+40 >= 480:
         angle = angle*-1
-        counter_changex = (math.cos(angle*math.pi/180)*speed)
-        counter_changey = (math.sin(angle*math.pi/180)*speed)
+        counter_changex = int((math.cos(angle*math.pi/180)*speed))
+        counter_changey = int((math.sin(angle*math.pi/180)*speed))
         
     if ball.x <= 0:
         counterx = 0
@@ -229,16 +270,16 @@ while not gameOver:
             angle = 180-angle
         elif angle < 0:
             angle = (180+angle)*-1
-        counter_changex = (math.cos(angle*math.pi/180)*speed)
-        counter_changey = (math.sin(angle*math.pi/180)*speed)
+        counter_changex = int((math.cos(angle*math.pi/180)*speed))
+        counter_changey = int((math.sin(angle*math.pi/180)*speed))
         
     if pygame.sprite.collide_rect(ball, block2):
         if angle > 0:
             angle = 180-angle
         elif angle < 0:
             angle = (180+angle)*-1
-        counter_changex = (math.cos(angle*math.pi/180)*speed)
-        counter_changey = (math.sin(angle*math.pi/180)*speed)
+        counter_changex = int((math.cos(angle*math.pi/180)*speed))
+        counter_changey = int((math.sin(angle*math.pi/180)*speed))
         
     pygame.display.flip()
 
@@ -257,9 +298,9 @@ while winner:
         if score2 > score1:
             color = blockColor2
             text1 = myfont.render("Player 2,", 1, color)
-        screen.blit(text1, (displayWidth/2-200, displayHeight*0.3))
+        screen.blit(text1, (int(displayWidth/2-200), int(displayHeight*0.3)))
         text2 = myfont.render("YOU WIN", 1, color)
-        screen.blit(text2, (displayWidth/2-220, displayHeight*0.3+100))
+        screen.blit(text2, (int(displayWidth/2-220), int(displayHeight*0.3+100)))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 winner = False

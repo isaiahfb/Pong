@@ -3,12 +3,12 @@ import sys
 import random
 import math
 
+
+# initialize pygame screen
 pygame.init()
 
 displayWidth = 640
 displayHeight = 480
-
-#print(pygame.font.get_fonts());
 
 pygame.display.set_caption('Pong')
 
@@ -16,6 +16,8 @@ clock = pygame.time.Clock()
 
 screen = pygame.display.set_mode((displayWidth,displayHeight))
 
+
+# console menu
 
 print("NOTES:");
 print();
@@ -27,11 +29,14 @@ print();
 print("Press 'esc' to exit!");
 print();
 print();
-talk = input("How many points do you want to play to? ")
-winScore = int(talk)
+
+winScore = int(input("How many points do you want to play to? "))
+
+# start of game setup
 
 gameOver = False
 winner = False
+play = False
 
 blockWidth = 15
 blockLength = 70
@@ -56,9 +61,8 @@ class StartButton:
         self.rect = pygame.Rect(x,y,self.width,self.height)
     def render(self):
         pygame.draw.rect(screen,pygame.Color('lightsalmon'),(self.x,self.y,self.width,self.height))
-
-button = StartButton(displayWidth/2-110, displayHeight*0.4)
-play = False
+    def render2(self):
+        pygame.draw.rect(screen,pygame.Color('darksalmon'),(self.x,self.y,self.width,self.height))
 
 class Circle(pygame.sprite.Sprite):   
     def __init__(self,image,x,y):
@@ -87,6 +91,7 @@ class Block(pygame.sprite.Sprite):
     def render(self):
         screen.blit(self.image, (self.x, self.y))
 
+
 def restart():
     angle1 = random.randint(134, 225)
     angle2 = random.randint(-46,45)
@@ -101,34 +106,38 @@ def restart():
         counter_changex = (math.cos(angle*math.pi/180)*speed)
         counter_changey = (math.sin(angle*math.pi/180)*speed) 
 
+
+# start screen
+
+button = StartButton(displayWidth/2-110, displayHeight*0.4)
+
 while not play:
     clock.tick(60)
     pygame.display.flip()
     screen.fill(pygame.Color('paleturquoise2'))
     button.render()
-    myfont = pygame.font.SysFont("batangbatangchegungsuhgungsuhche", 80)
+    if button.rect.collidepoint(pygame.mouse.get_pos()):
+        button.render2()
+    myfont = pygame.font.SysFont("batangbatangchegungsuhgungsuhche", 130)
     text = myfont.render("PLAY", 1, (255, 255, 255))
-    screen.blit(text, (displayWidth/2-95,displayHeight*0.4))
+    screen.blit(text, (displayWidth/2-100,displayHeight*0.4))
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             play = True
             gameOver = True
-            print(); 
-            print(":^) Bye! :^)");
         if event.type == pygame.KEYDOWN:       
             if event.key == pygame.K_ESCAPE:
                 play = True
                 gameOver = True
-                print(); 
-                print(":^) Bye! :^)");
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             if button.rect.collidepoint(pos):               
                 play = True
                 restart()
                 
-                
+# main game loop
+
 while not gameOver:
 
     for event in pygame.event.get():
@@ -168,34 +177,30 @@ while not gameOver:
   
     screen.fill(pygame.Color('papayawhip'))
 
-    #image = pygame.draw.circle(screen, pygame.Color('salmon'), (320,250), 20, 0)
-    beachBall = pygame.image.load('circle.png')
+    beachBall = pygame.image.load("circle.png").convert_alpha()
     image = pygame.transform.scale(beachBall, (40,40))
  
     myfont = pygame.font.SysFont("batangbatangchegungsuhgungsuhche", 20)
-  #  text = myfont.render("HI SAIAH!", 1, (154, 12, 63))
- #   screen.blit(text, (180, 180))
-
+    
     block1 = Block(blockColor1, 0, yPos1, blockWidth, blockLength)
     block1.render()
-    #block1 = pygame.Surface((blockWidth,blockLength))
-    #block1.fill(pygame.Color('royalblue1'))
     block1.rect.topleft = (0, yPos1)
     
     block2 = Block(blockColor2, 625, yPos2, blockWidth, blockLength)
     block2.render()
-    #block2 = pygame.Surface((blockWidth,blockLength))
-    #block2.fill(pygame.Color('royalblue1'))
     block2.rect.topleft = (625, yPos2)
-
-    #screen.blit(block1,(0, yPos1))
-    #screen.blit(block2, (625, yPos2))
     
-    ball = Circle(image, 320, 250)
+    ball = Circle(image, 320, 240)
     ball.x += counterx
     ball.y += countery
     ball.render()
     ball.rect.topleft = (ball.x,ball.y)
+
+    myfont = pygame.font.SysFont("batangbatangchegungsuhgungsuhche", 25)
+    text1 = myfont.render("Player 1: " + str(score1), 1, blockColor1)
+    screen.blit(text1, (50, 50))
+    text2 = myfont.render("Player 2: " + str(score2) , 1, blockColor2)
+    screen.blit(text2, (displayWidth -150, 50))
     
     if ball.y <= 0 or ball.y+40 >= 480:
         angle = angle*-1
@@ -203,7 +208,6 @@ while not gameOver:
         counter_changey = (math.sin(angle*math.pi/180)*speed)
         
     if ball.x <= 0:
-        print("Player 2 gets a point");
         counterx = 0
         countery = 0
         score2 += 1
@@ -212,7 +216,6 @@ while not gameOver:
             gameOver = True
         restart()        
     elif ball.x+40 >= 640:
-        print("Player 1 gets a point");
         counterx = 0
         countery = 0
         score1+=1
@@ -222,7 +225,6 @@ while not gameOver:
         restart()
         
     if pygame.sprite.collide_rect(block1, ball):
-        print("p.1 blocked");
         if angle > 0:
             angle = 180-angle
         elif angle < 0:
@@ -231,7 +233,6 @@ while not gameOver:
         counter_changey = (math.sin(angle*math.pi/180)*speed)
         
     if pygame.sprite.collide_rect(ball, block2):
-        print("p.2 blocked");
         if angle > 0:
             angle = 180-angle
         elif angle < 0:
@@ -242,6 +243,9 @@ while not gameOver:
     pygame.display.flip()
 
     clock.tick(60)
+
+
+# winner display
 
 while winner:
         pygame.display.flip()
@@ -262,8 +266,6 @@ while winner:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     winner = False
-                    print(); 
-                    print(":^) Bye! :^)");
 
 pygame.quit()
 quit()

@@ -259,7 +259,7 @@ while not gameOver:
         counter_changex = int((math.cos(angle*math.pi/180)*speed))
         counter_changey = int((math.sin(angle*math.pi/180)*speed))
         
-    if ball.x <= 0:
+    if ball.x <= -40:
         counterx = 0
         countery = 0
         score2 += 1
@@ -267,7 +267,7 @@ while not gameOver:
             winner = True
             gameOver = True
         restart()        
-    elif ball.x+40 >= 640:
+    elif ball.x+40 >= 680:
         counterx = 0
         countery = 0
         score1+=1
@@ -277,20 +277,22 @@ while not gameOver:
         restart()
         
     if pygame.sprite.collide_rect(block1, ball):
-        if angle > 0:
-            angle = 180-angle
-        elif angle < 0:
-            angle = (180+angle)*-1
-        counter_changex = int((math.cos(angle*math.pi/180)*speed))
-        counter_changey = int((math.sin(angle*math.pi/180)*speed))
+        if ball.x >= 10:
+            if angle > 0:
+                angle = 180-angle
+            elif angle < 0:
+                angle = (180+angle)*-1
+            counter_changex = int((math.cos(angle*math.pi/180)*speed))
+            counter_changey = int((math.sin(angle*math.pi/180)*speed))
         
     if pygame.sprite.collide_rect(ball, block2):
-        if angle > 0:
-            angle = 180-angle
-        elif angle < 0:
-            angle = (180+angle)*-1
-        counter_changex = int((math.cos(angle*math.pi/180)*speed))
-        counter_changey = int((math.sin(angle*math.pi/180)*speed))
+        if ball.x+40 <= 630:
+            if angle > 0:
+                angle = 180-angle
+            elif angle < 0:
+                angle = (180+angle)*-1
+            counter_changex = int((math.cos(angle*math.pi/180)*speed))
+            counter_changey = int((math.sin(angle*math.pi/180)*speed))
         
     pygame.display.flip()
 

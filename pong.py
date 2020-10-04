@@ -294,19 +294,28 @@ while winner:
         myfont = pygame.font.SysFont("batangbatangchegungsuhgungsuhche", 100)
         if score1 > score2:
             color = blockColor1
-            text1 = myfont.render("Player 1,", 1, color)
+            text1 = myfont.render("Player 1", 1, color)
         if score2 > score1:
             color = blockColor2
-            text1 = myfont.render("Player 2,", 1, color)
-        screen.blit(text1, (int(displayWidth/2-200), int(displayHeight*0.3)))
-        text2 = myfont.render("YOU WIN", 1, color)
-        screen.blit(text2, (int(displayWidth/2-220), int(displayHeight*0.3+100)))
+            text1 = myfont.render("Player 2", 1, color)
+        screen.blit(text1, (int(displayWidth/2-135), int(displayHeight*0.2)))
+        text2 = myfont.render("YOU WIN!", 1, color)
+        screen.blit(text2, (int(displayWidth/2-170), int(displayHeight*0.2+80)))
+
+        myfont = pygame.font.SysFont("batangbatangchegungsuhgungsuhche", 30)
+        scoretext = myfont.render("Player 1: " + str(score1) + "              Player 2: " + str(score2), 1, color)
+        screen.blit(scoretext, (int(displayWidth/2-150), int(displayHeight*0.2 + 180)))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 winner = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     winner = False
+                if event.key == pygame.K_r:
+                    gameOver = False
+                    winner = False
+                    play = True
+
 
 pygame.quit()
 quit()

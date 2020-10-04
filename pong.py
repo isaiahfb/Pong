@@ -20,6 +20,8 @@ screen = pygame.display.set_mode((displayWidth,displayHeight))
 # console menu
 
 print()
+print("Press space bar to start game and launch ball")
+print()
 print("PLAYER ONE: (Left) ")
 print("Press 'w' to move up, 's' to move down")
 print("PLAYER TWO: (Right) ")
@@ -35,6 +37,7 @@ print()
 gameOver = False
 winner = False
 play = False
+ball_moving = False
 
 blockWidth = 15
 blockLength = 70
@@ -90,19 +93,19 @@ class Block(pygame.sprite.Sprite):
         screen.blit(self.image, (self.x, self.y))
 
 
+# place ball at center of screen and determine launch angle
 def restart():
     angle1 = random.randint(134, 225)
     angle2 = random.randint(-46,45)
     angleChoose = random.randint(0,1)
-    global angle, counter_changex, counter_changey
+    global angle, counter_changex, counter_changey, ball_moving
     if angleChoose == 0:
         angle = angle1
-        counter_changex = int((math.cos(angle*math.pi/180)*speed))
-        counter_changey = int((math.sin(angle*math.pi/180)*speed))
     elif angleChoose == 1:
         angle = angle2
-        counter_changex = int((math.cos(angle*math.pi/180)*speed))
-        counter_changey = int((math.sin(angle*math.pi/180)*speed))
+    ball_moving = False
+    counter_changex = 0
+    counter_changey = 0
 
 
 # start screen
@@ -142,6 +145,9 @@ while not play:
             if event.key == pygame.K_ESCAPE:
                 play = True
                 gameOver = True
+            if event.key == pygame.K_SPACE:
+                play = True
+                restart()
         # click play 
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
@@ -181,11 +187,16 @@ except ValueError:
 
 while not gameOver:
 
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             gameOver = True
-            
         if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                if not ball_moving:
+                    ball_moving = True
+                    counter_changex = int((math.cos(angle*math.pi/180)*speed))
+                    counter_changey = int((math.sin(angle*math.pi/180)*speed))
             if event.key == pygame.K_UP:
                 yPos2_change = -10     
             if event.key == pygame.K_DOWN:
@@ -231,7 +242,7 @@ while not gameOver:
     block2.render()
     block2.rect.topleft = (625, yPos2)
     
-    ball = Circle(image, 320, 240)
+    ball = Circle(image, 300, 220)
     ball.x += counterx
     ball.y += countery
     ball.render()
@@ -311,10 +322,6 @@ while winner:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     winner = False
-                if event.key == pygame.K_r:
-                    gameOver = False
-                    winner = False
-                    play = True
 
 
 pygame.quit()

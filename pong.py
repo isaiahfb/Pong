@@ -31,28 +31,6 @@ print("Press 'esc' to exit")
 print()
 
 
-
-# start of game setup
-
-gameOver = False
-winner = False
-play = False
-ball_moving = False
-
-blockWidth = 15
-blockLength = 70
-blockColor1 = pygame.Color('royalblue1')
-blockColor2 = pygame.Color('mediumspringgreen')
-yPos1 = int((displayHeight/2)-(blockLength/2))
-yPos2 = int((displayHeight/2)-(blockLength/2))
-yPos1_change = 0
-yPos2_change = 0
-counterx = 0
-countery = 0
-speed = 7
-score1 = 0
-score2 = 0
-
 class StartButton:
     def __init__(self,x,y):
         self.x = x
@@ -93,12 +71,40 @@ class Block(pygame.sprite.Sprite):
         screen.blit(self.image, (self.x, self.y))
 
 
+# start of game setup
+
+gameOver = False
+winner = False
+play = False
+ball_moving = False
+
+blockWidth = 30
+blockLength = 70
+blockColor1 = pygame.Color('royalblue1')
+blockColor2 = pygame.Color('mediumspringgreen')
+yPos1 = int((displayHeight/2)-(blockLength/2))
+yPos2 = int((displayHeight/2)-(blockLength/2))
+yPos1_change = 0
+yPos2_change = 0
+INITIALSPEED = 5
+speed = INITIALSPEED
+MAXSPEED = 20
+score1 = 0
+score2 = 0
+
+beachBall = pygame.image.load("circle.png").convert_alpha()
+image = pygame.transform.scale(beachBall, (40,40))
+ball = Circle(image, 300, 220)
+
+block1 = Block(blockColor1, 0, yPos1, blockWidth, blockLength) #left block
+block2 = Block(blockColor2, 610, yPos2, blockWidth, blockLength) #right block
+
 # place ball at center of screen and determine launch angle
 def restart():
     angle1 = random.randint(134, 225)
     angle2 = random.randint(-46,45)
     angleChoose = random.randint(0,1)
-    global angle, counter_changex, counter_changey, ball_moving
+    global angle, counter_changex, counter_changey, ball_moving, speed
     if angleChoose == 0:
         angle = angle1
     elif angleChoose == 1:
@@ -106,6 +112,9 @@ def restart():
     ball_moving = False
     counter_changex = 0
     counter_changey = 0
+    ball.x = 300
+    ball.y = 220
+    speed = INITIALSPEED
 
 
 # start screen
@@ -187,7 +196,7 @@ except ValueError:
 
 while not gameOver:
 
-    
+    # general game controls and block movement
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             gameOver = True
@@ -208,7 +217,7 @@ while not gameOver:
             if event.key == pygame.K_ESCAPE:
                 gameOver = True
                 print(); 
-                print(":^) Bye! :^)"); 
+                print("Bye!"); 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 yPos2_change = 0
@@ -224,52 +233,47 @@ while not gameOver:
         yPos2_change = 0                     
     yPos1 += yPos1_change
     yPos2 += yPos2_change
-    counterx += counter_changex
-    countery += counter_changey
   
     screen.fill(pygame.Color('papayawhip'))
-
-    beachBall = pygame.image.load("circle.png").convert_alpha()
-    image = pygame.transform.scale(beachBall, (40,40))
- 
-    myfont = pygame.font.SysFont("batangbatangchegungsuhgungsuhche", 20)
     
-    block1 = Block(blockColor1, 0, yPos1, blockWidth, blockLength)
+    # update and render blocks
+    block1.y = yPos1
     block1.render()
     block1.rect.topleft = (0, yPos1)
-    
-    block2 = Block(blockColor2, 625, yPos2, blockWidth, blockLength)
+
+    block2.y = yPos2
     block2.render()
-    block2.rect.topleft = (625, yPos2)
+    block2.rect.topleft = (610, yPos2)
     
-    ball = Circle(image, 300, 220)
-    ball.x += counterx
-    ball.y += countery
+    #update and render ball 
+    ball.x += counter_changex
+    ball.y += counter_changey
     ball.render()
     ball.rect.topleft = (ball.x,ball.y)
 
+    #update and render score
     myfont = pygame.font.SysFont("batangbatangchegungsuhgungsuhche", 25)
     text1 = myfont.render("Player 1: " + str(score1), 1, blockColor1)
     screen.blit(text1, (50, 50))
     text2 = myfont.render("Player 2: " + str(score2) , 1, blockColor2)
     screen.blit(text2, (displayWidth -150, 50))
     
+    #collision detection for ball
     if ball.y <= 0 or ball.y+40 >= 480:
-        angle = angle*-1
+        if angle >= 135 and angle <= 225:
+            angle = 360-angle
+        else:
+            angle = -angle 
         counter_changex = int((math.cos(angle*math.pi/180)*speed))
         counter_changey = int((math.sin(angle*math.pi/180)*speed))
         
     if ball.x <= -40:
-        counterx = 0
-        countery = 0
         score2 += 1
         if score2 >= winScore:
             winner = True
             gameOver = True
         restart()        
     elif ball.x+40 >= 680:
-        counterx = 0
-        countery = 0
         score1+=1
         if score1 >= winScore:
             winner = True
@@ -277,20 +281,34 @@ while not gameOver:
         restart()
         
     if pygame.sprite.collide_rect(block1, ball):
-        if ball.x >= 10:
-            if angle > 0:
-                angle = 180-angle
-            elif angle < 0:
-                angle = (180+angle)*-1
+        print("block1")
+        print(angle)
+        if ball.x >= blockWidth - speed - 1:
+            newAngle = 180 - angle 
+            if newAngle >= 0:
+                newAngle = newAngle + (45-newAngle)*((ball.y + 20) - (block1.y + 35))/55
+            elif newAngle < 0:
+                newAngle = newAngle + (-45-newAngle)*((block1.y + 35) - (ball.y + 20))/55
+            if speed < MAXSPEED:
+                speed += 0.5
+            angle = newAngle 
+            print(angle)
             counter_changex = int((math.cos(angle*math.pi/180)*speed))
             counter_changey = int((math.sin(angle*math.pi/180)*speed))
         
     if pygame.sprite.collide_rect(ball, block2):
-        if ball.x+40 <= 630:
-            if angle > 0:
-                angle = 180-angle
-            elif angle < 0:
-                angle = (180+angle)*-1
+        print("block2")
+        print(angle)
+        if ball.x+40 <= 640 - (blockWidth - speed - 1):
+            newAngle = 180 - angle 
+            if newAngle <= 180:
+                newAngle = newAngle + (135-newAngle)*((ball.y + 20) - (block2.y + 35))/55
+            elif newAngle > 0:
+                newAngle = newAngle + (225-newAngle)*((block2.y + 35) - (ball.y + 20))/55
+            if speed < MAXSPEED:
+                speed += 0.5
+            angle = newAngle 
+            print(angle)
             counter_changex = int((math.cos(angle*math.pi/180)*speed))
             counter_changey = int((math.sin(angle*math.pi/180)*speed))
         
